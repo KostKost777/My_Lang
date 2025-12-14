@@ -79,7 +79,7 @@ void TokenArrayCtor(TokenArray* tokens);
 
 void TokenArrayDtor(TokenArray* tokens);
 
-void MakeLexicalAnalysis(Buffer* buffer, TokenArray* tokens);
+Status MakeLexicalAnalysis(Buffer* buffer, TokenArray* tokens);
 
 void MoveBufferPointer(Buffer* buffer, size_t offset);
 

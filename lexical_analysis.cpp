@@ -31,7 +31,7 @@ void TokenArrayDtor(TokenArray* tokens)
     tokens->size = 0;
 }
 
-void MakeLexicalAnalysis(Buffer* buffer, TokenArray* tokens)
+Status MakeLexicalAnalysis(Buffer* buffer, TokenArray* tokens)
 {
     assert(buffer);
     assert(buffer->data);
@@ -41,7 +41,7 @@ void MakeLexicalAnalysis(Buffer* buffer, TokenArray* tokens)
     {
         size_t old_size = buffer->size;
 
-        printf("BUFFER: %s\n", buffer->data);
+        //printf("BUFFER: %s\n", buffer->data);
 
         if (ParseNumber(buffer, tokens) == success)
             continue;
@@ -60,8 +60,10 @@ void MakeLexicalAnalysis(Buffer* buffer, TokenArray* tokens)
             printf("ERROR on line: %llu on column: %llu\n",
                                               buffer->line,
                                               buffer->column);
+            return error;
         }
     }
+    return success;
 }
 
 Status ParseNumber(Buffer* buffer, TokenArray* tokens)
@@ -106,7 +108,7 @@ Status ParseKeyWord(Buffer* buffer, TokenArray* tokens)
 
     for (int i = 0; i < NUM_OF_KEYWORDS; ++i)
     {
-        printf("KEY_WORD: |%s|   MY_KY_WOED: |%s|\n", keywords_arr[i].name,
+        printf("KEY_WORD: |%s|   MY_KEY_WORD: |%s|\n", keywords_arr[i].name,
                                                       keyword_name);
         if (keywords_arr[i].hash == keyword_hash)
         {
@@ -167,9 +169,12 @@ Status ParseIdentifier(Buffer* buffer, TokenArray* tokens)
 
     while(true)
     {
+        if (isspace(*buffer->data))
+            break;
+
         if (   !((len != 0 && isdigit(*buffer->data))
             || IsSymInIdentifierName(*buffer->data)))
-            break;
+            return error;
 
         identifier_name[len] = *buffer->data;
 
