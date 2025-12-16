@@ -36,6 +36,7 @@ void TreeDump(Tree* tree)
     char* image_file_name = GetNewImageFileName(file_counter);
 
     FILE* graphiz_file = fopen(image_file_name, "w");
+    assert(graphiz_file);
 
     fprintf(graphiz_file, "digraph {\n"
                           "graph [charset=\"utf-8\"]"
@@ -151,7 +152,7 @@ void PrintGraphizNode(FILE* graphiz_file,  Node* node)
 
     else
         fprintf(graphiz_file, "| VALUE: %s",
-                              GetNodeTypeName(node));
+                              ConvertEncoding(node->lexeme.str.name));
 
     if (node->left != NULL && node->right != NULL)
         fprintf(graphiz_file,
@@ -237,9 +238,11 @@ static char* GetNewImageFileName(int file_counter)
     return strdup(str_file_counter);
 }
 
-void PrintTokenArray(TokenArray* tokens)
+void PrintTokenArray(TokenArray* tokens, size_t begin_pos)
 {
-    for (size_t i = 0; i < tokens->size; ++i)
+    assert(begin_pos < tokens->size);
+
+    for (size_t i = begin_pos; i < tokens->size; ++i)
     {
         fprintf(log_file, "TOKEN[%llu]:\n", i);
 
@@ -255,6 +258,69 @@ void PrintTokenArray(TokenArray* tokens)
 
         fprintf(log_file, "\n----------------------------\n\n");
     }
+}
+
+char* ConvertEncoding(char* win1251)
+{
+    assert(win1251);
+
+    size_t win1251_size = strlen(win1251);
+    size_t utf8_size = 0;
+
+    //printf("SIZE: %d  STR: %s\n", win1251_size, win1251);
+
+    for (size_t i = 0; i < win1251_size; i++)
+    {
+        unsigned char sym = win1251[i];
+
+        if (sym < 128)
+            utf8_size++;
+
+        else if (sym >= 192 || sym == 168 || sym == 184)
+            utf8_size += 2;
+    }
+
+    char* utf8 = (char*)calloc(utf8_size + 1, sizeof(char));
+
+    assert(utf8);
+
+    size_t utf8_i = 0;
+
+    for (size_t win1251_i = 0; win1251_i < win1251_size; win1251_i++)
+    {
+        unsigned char sym = win1251[win1251_i];
+
+        if (sym < 128)
+            utf8[utf8_i++] = sym;
+
+        if (sym >= 192 && sym <= 239)
+        {
+            utf8[utf8_i++] = (char)208;
+            utf8[utf8_i++] = (char)(sym - 48);
+        }
+
+        else if (sym >= 240)
+        {
+            utf8[utf8_i++] = (char)209;
+            utf8[utf8_i++] = (char)(sym - 112);
+        }
+
+        else if (sym == 168)
+        {
+            utf8[utf8_i++] = (char)208;
+            utf8[utf8_i++] = (char)129;
+        }
+
+        else if (sym == 184)
+        {
+            utf8[utf8_i++] = (char)209;
+            utf8[utf8_i++] = (char)145;
+        }
+    }
+
+    utf8[utf8_i] = '\0';
+
+    return utf8;
 }
 
 

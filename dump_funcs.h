@@ -7,7 +7,7 @@ extern const char* log_file_name;
 #include "lexical_analysis.h"
 #include "tree_funcs.h"
 
-void PrintTokenArray(TokenArray* tokens);
+void PrintTokenArray(TokenArray* tokens, size_t begin_pos);
 
 void TreeDump(Tree* tree);
 
@@ -28,6 +28,8 @@ void PrintBazeNode(FILE* graphiz_file,  Tree* tree);
 void PrintBazeEdge(FILE* graphiz_file,  Tree* tree);
 
 void PrintTree(Node* node, FILE* graphiz_file);
+
+char* ConvertEncoding(char* win1251);
 
 void CloseLogFile();
 void OpenLogFile();

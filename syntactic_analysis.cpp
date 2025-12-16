@@ -20,14 +20,41 @@ Status MakeSyntacticAnalysis(Tree* tree, TokenArray* tokens)
 
 Node* GetGrammer(TokenArray* tokens, size_t* pos, Tree* tree, Node* node)
 {
-    fprintf(log_file, "<strong>ВызовGetGeneral</strong>\n");
+    fprintf(log_file, "<strong>Вызов GetGeneral</strong>\n");
 
-    node = GetAddSubOp(tokens, pos, tree, node);
+    node = GetOperator(tokens, pos, tree, node);
 
     if (tokens->arr[*pos].type != END)
     {
         fprintf(log_file, "<strong>TokenArray во время ошибки: </strong>\n");
-        PrintTokenArray(tokens);
+        PrintTokenArray(tokens, *pos);
+    }
+
+    return node;
+}
+
+Node* GetOperator(TokenArray* tokens, size_t* pos, Tree* tree, Node* node)
+{
+    while(true)
+    {
+        Node* node_left = GetWord(tokens, pos, tree, node);
+        if (node_left == NULL) break;
+
+        if (tokens->arr[*pos].type != OP_ASSIGNED) break;
+        Token assigned_token = tokens->arr[*pos];
+        *pos += 1;
+
+        Node* node_right = GetAddSubOp(tokens, pos, tree, node);
+        if (node_right == NULL) break;
+
+        if (tokens->arr[*pos].type != KEY_END_OP) break;
+        Token end_token = tokens->arr[*pos];
+        *pos += 1;
+
+        node = NewNode(end_token,
+                       NewNode(assigned_token, node_left, node_right, tree),
+                       GetOperator(tokens, pos, tree, node),
+                       tree);
     }
 
     return node;
@@ -168,6 +195,7 @@ Node* GetWord(TokenArray* tokens, size_t* pos, Tree* tree, Node* node)
     if (node != NULL)
     {
         fprintf(log_file, "<strong>Нашел индификатор</strong>\n\n");
+        *pos += 1;
         return node;
     }
 
@@ -180,7 +208,7 @@ Node* GetIdentifier(TokenArray* tokens, size_t* pos, Tree* tree)
 
     if (tokens->arr[*pos].type == IDENT)
     {
-        fprintf(log_file, "<strong>Нашел индефикатор</strong>\n\n");
+        fprintf(log_file, "<strong>Нашел индификатор</strong>\n\n");
         return NewNode(tokens->arr[*pos], NULL, NULL, tree);
     }
 

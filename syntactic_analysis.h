@@ -24,6 +24,8 @@ Node* GetAddSubOp(TokenArray* tokens, size_t* pos, Tree* tree, Node* node);
 
 Node* GetGrammer(TokenArray* tokens, size_t* pos, Tree* tree, Node* node);
 
+Node* GetOperator(TokenArray* tokens, size_t* pos, Tree* tree, Node* node);
+
 
 
 #endif

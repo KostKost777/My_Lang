@@ -34,6 +34,7 @@ void TokenArrayDtor(TokenArray* tokens)
 Status MakeLexicalAnalysis(Buffer* buffer, size_t* pos, TokenArray* tokens)
 {
     assert(buffer);
+    assert(pos);
     assert(buffer->data);
     assert(tokens);
 
@@ -41,7 +42,11 @@ Status MakeLexicalAnalysis(Buffer* buffer, size_t* pos, TokenArray* tokens)
     {
         size_t old_size = buffer->size;
 
-        //printf("BUFFER: %s\n", buffer->data);
+        // printf("---------------------------------\n");
+        // printf("BUFFER: %s\n\n", buffer->data);
+        // printf("POS: %llu\n", *pos);
+        // printf("---------------------------------\n\n");
+        ;
 
         if (ParseNumber(buffer, pos, tokens) == success)
             continue;
@@ -73,6 +78,7 @@ Status ParseNumber(Buffer* buffer, size_t* pos, TokenArray* tokens)
 {
     assert(buffer);
     assert(buffer->data);
+    assert(pos);
     assert(tokens);
 
     int sign = GetSignOfNumber(buffer, pos);
@@ -98,12 +104,13 @@ Status ParseKeyWord(Buffer* buffer, size_t* pos, TokenArray* tokens)
 {
     assert(buffer);
     assert(buffer->data);
+    assert(pos);
     assert(tokens);
 
     char keyword_name[MAX_LEN_OF_WORD] = {};
     int len = 0;
 
-    sscanf(buffer->data, "%s%n", keyword_name, &len);
+    sscanf(buffer->data + *pos, "%s%n", keyword_name, &len);
 
     if (len < 0) assert(false);
 
@@ -131,12 +138,13 @@ Status ParseOperator(Buffer* buffer, size_t* pos, TokenArray* tokens)
 {
     assert(buffer);
     assert(buffer->data);
+    assert(pos);
     assert(tokens);
 
     char operator_name[MAX_LEN_OF_WORD] = {};
     int len = 0;
 
-    sscanf(buffer->data, "%s%n", operator_name, &len);
+    sscanf(buffer->data + *pos, "%s%n", operator_name, &len);
 
     if (len < 0) assert(false);
 
@@ -144,6 +152,7 @@ Status ParseOperator(Buffer* buffer, size_t* pos, TokenArray* tokens)
 
     for (int i = 0; i < NUM_OF_OPERATORS; ++i)
     {
+        //printf("ORIG: |%s|   MY: |%s|\n", operator_arr[i].name, operator_name);
         if (operator_arr[i].hash == operator_hash)
         {
             AddStringToken(tokens, buffer,
@@ -162,6 +171,7 @@ Status ParseIdentifier(Buffer* buffer, size_t* pos, TokenArray* tokens)
 {
     assert(buffer);
     assert(buffer->data);
+    assert(pos);
     assert(tokens);
 
     size_t len = 0;
@@ -180,6 +190,7 @@ Status ParseIdentifier(Buffer* buffer, size_t* pos, TokenArray* tokens)
 
         len++;
         MoveBufferPointer(buffer, pos, 1);
+        printf("ABOBA: %llu\n", *pos);
     }
 
     AddStringToken(tokens, buffer, IDENT, identifier_name);
@@ -191,6 +202,7 @@ Status ParseIdentifier(Buffer* buffer, size_t* pos, TokenArray* tokens)
 int GetSignOfNumber(Buffer* buffer, size_t* pos)
 {
     assert(buffer);
+    assert(pos);
     assert(buffer->data);
 
     if (buffer->data[*pos] == '-' && isdigit (*(buffer->data + 1)))
@@ -223,6 +235,7 @@ void AddStringToken(TokenArray* tokens, Buffer* buffer,
 {
     assert(tokens);
     assert(buffer);
+    assert(name);
 
     tokens->arr[tokens->size].type = type;
     tokens->arr[tokens->size].lexeme.str.name = strdup(name);
@@ -237,8 +250,9 @@ void MoveBufferPointer(Buffer* buffer, size_t* pos,  size_t offset)
 {
     assert(buffer);
     assert(buffer->data);
+    assert(pos);
 
-    pos += offset;
+    *pos += offset;
     buffer->column += offset;
 }
 
@@ -246,6 +260,7 @@ void SkipSpaces(Buffer* buffer, size_t* pos)
 {
     assert(buffer);
     assert(buffer->data);
+    assert(pos);
 
     while(isspace(buffer->data[*pos]))
     {

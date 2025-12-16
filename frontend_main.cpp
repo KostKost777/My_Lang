@@ -24,7 +24,7 @@ int main()
 
     MakeLexicalAnalysis(&buffer, &pos, &tokens);
     BufferDtor(&buffer);
-    PrintTokenArray(&tokens);
+    PrintTokenArray(&tokens, 0);
 
     Tree tree = {};
     TreeCtor(&tree);
