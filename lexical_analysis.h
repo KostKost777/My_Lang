@@ -15,6 +15,8 @@ enum Status
 enum Type
 {
     //Kewords
+    KEY_IN = -4,
+    KEY_OUT = -3,
     KEY_COMMA = -2,
     KEY_IF = -1,
     KEY_ELSE = 0,
@@ -42,6 +44,9 @@ enum Type
     OP_SUB = 19,
     OP_POW = 20,
     OP_MOD = 21,
+    OP_AND = -5,
+    OP_OR = -6,
+    OP_SQRT = -7,
 
     //Identifier
     IDENT = 22,

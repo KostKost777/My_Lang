@@ -141,6 +141,10 @@ Node* GetOperator(TokenArray* tokens, size_t* pos, Tree* tree, Node* node)
     if (node != NULL)
         return node;
 
+    node = GetInOutOp(tokens, pos, tree, node);
+    if (node != NULL)
+        return node;
+
     return node;
 }
 
@@ -160,7 +164,7 @@ Node* GetWhileOp(TokenArray* tokens, size_t* pos, Tree* tree, Node* node)
     if (tokens->arr[*pos].type != KEY_LPAREN) return NULL;
     *pos += 1;
 
-    Node* node_left = GetAddSubOp(tokens, pos, tree, node);
+    Node* node_left = GetFirstCompareOp(tokens, pos, tree, node);
     if (node_left == NULL) return NULL;
 
     if (tokens->arr[*pos].type != KEY_RPAREN) return NULL;
@@ -200,7 +204,7 @@ Node* GetIfOp(TokenArray* tokens, size_t* pos, Tree* tree, Node* node)
     if (tokens->arr[*pos].type != KEY_LPAREN) return NULL;
     *pos += 1;
 
-    Node* node_condition = GetAddSubOp(tokens, pos, tree, node);
+    Node* node_condition = GetFirstCompareOp(tokens, pos, tree, node);
     if (node_condition == NULL) return NULL;
 
     if (tokens->arr[*pos].type != KEY_RPAREN) return NULL;
@@ -275,7 +279,7 @@ Node* GetAssignedOp(TokenArray* tokens, size_t* pos, Tree* tree, Node* node)
     Token assigned_token = tokens->arr[*pos];
     *pos += 1;
 
-    Node* node_right = GetAddSubOp(tokens, pos, tree, node);
+    Node* node_right = GetFirstCompareOp(tokens, pos, tree, node);
     if (node_right == NULL) return NULL;
 
     if (tokens->arr[*pos].type != KEY_SEMICOLON) return NULL;
@@ -300,7 +304,7 @@ Node* GetReturnOp(TokenArray* tokens, size_t* pos, Tree* tree, Node* node)
     Token return_token = tokens->arr[*pos];
     *pos += 1;
 
-    Node* node_left = GetAddSubOp(tokens, pos, tree, node);
+    Node* node_left = GetFirstCompareOp(tokens, pos, tree, node);
     if (node_left == NULL) return NULL;
 
     if (tokens->arr[*pos].type != KEY_SEMICOLON) return NULL;
@@ -309,6 +313,43 @@ Node* GetReturnOp(TokenArray* tokens, size_t* pos, Tree* tree, Node* node)
     return  NewNode(GetSeparateToken(KEY_SEMICOLON),
                     NewNode(return_token, node_left, NULL, tree),
                     NULL,
+                    tree);
+}
+
+Node* GetInOutOp(TokenArray* tokens, size_t* pos, Tree* tree, Node* node)
+{
+    assert(tree);
+    assert(tokens);
+    assert(pos);
+
+    fprintf(log_file, "<strong>Вызов GetReturnOp</strong>\n");
+    fflush(log_file);
+
+    if (   tokens->arr[*pos].type != KEY_IN
+        && tokens->arr[*pos].type != KEY_OUT)
+        return NULL;
+
+    Token token = tokens->arr[*pos];
+    *pos += 1;
+
+    Node* node_left = NULL;
+
+    if (token.type == KEY_IN)
+    {
+        node_left = GetIdentifier(tokens, pos, tree);
+        *pos += 1;
+    }
+    else
+        node_left = GetFirstCompareOp(tokens, pos, tree, node);
+
+    if (node_left == NULL) return NULL;
+
+    if (tokens->arr[*pos].type != KEY_SEMICOLON) return NULL;
+    *pos += 1;
+
+    return  NewNode(GetSeparateToken(KEY_SEMICOLON),
+                    NewNode(token, node_left, NULL, tree),
+                    GetOperator(tokens, pos, tree, node),
                     tree);
 }
 
@@ -347,7 +388,7 @@ Node* GetFuncArgs(TokenArray* tokens, size_t* pos, Tree* tree, Node* node)
 
     fprintf(log_file, "<strong>Вызов GetFuncArgs</strong>\n");
 
-    Node* node_right = GetAddSubOp(tokens, pos, tree, node);
+    Node* node_right = GetFirstCompareOp(tokens, pos, tree, node);
 
     if (node_right == NULL)  return NULL;
 
@@ -366,6 +407,114 @@ Node* GetFuncArgs(TokenArray* tokens, size_t* pos, Tree* tree, Node* node)
                    tree);
 }
 
+Node* GetFirstCompareOp(TokenArray* tokens, size_t* pos, Tree* tree, Node* node)
+{
+    assert(tree);
+    assert(tokens);
+    assert(pos);
+
+    fprintf(log_file, "<strong>Вызов GetFirstCompareOp</strong>\n");
+    fflush(log_file);
+
+    node = GetSecondCompareOp(tokens, pos, tree, node);
+
+    while (  tokens->arr[*pos].type == OP_OR)
+    {
+        Token or_token = tokens->arr[*pos];
+
+        *pos += 1;
+
+        node = NewNode(or_token,
+                       node,
+                       GetSecondCompareOp(tokens, pos, tree, node),
+                       tree);
+    }
+
+    return node;
+}
+
+Node* GetSecondCompareOp(TokenArray* tokens, size_t* pos, Tree* tree, Node* node)
+{
+    assert(tree);
+    assert(tokens);
+    assert(pos);
+
+    fprintf(log_file, "<strong>Вызов GetSecondCompareOp</strong>\n");
+    fflush(log_file);
+
+    node = GetThirdCompareOp(tokens, pos, tree, node);
+
+    while (  tokens->arr[*pos].type == OP_AND)
+    {
+        Token and_token = tokens->arr[*pos];
+
+        *pos += 1;
+
+        node = NewNode(and_token,
+                       node,
+                       GetThirdCompareOp(tokens, pos, tree, node),
+                       tree);
+    }
+
+    return node;
+}
+
+Node* GetThirdCompareOp(TokenArray* tokens, size_t* pos, Tree* tree, Node* node)
+{
+    assert(tree);
+    assert(tokens);
+    assert(pos);
+
+    fprintf(log_file, "<strong>Вызов GetThirdCompareOp</strong>\n");
+    fflush(log_file);
+
+    node = GetFourthCompareOp(tokens, pos, tree, node);
+
+    while (   tokens->arr[*pos].type == OP_EQUAL
+           || tokens->arr[*pos].type == OP_NOT_EQUAL)
+    {
+        Token token = tokens->arr[*pos];
+
+        *pos += 1;
+
+        node = NewNode(token,
+                       node,
+                       GetFourthCompareOp(tokens, pos, tree, node),
+                       tree);
+    }
+
+    return node;
+}
+
+Node* GetFourthCompareOp(TokenArray* tokens, size_t* pos, Tree* tree, Node* node)
+{
+    assert(tree);
+    assert(tokens);
+    assert(pos);
+
+    fprintf(log_file, "<strong>Вызов GetFourthCompareOp</strong>\n");
+    fflush(log_file);
+
+    node = GetAddSubOp(tokens, pos, tree, node);
+
+    while (   tokens->arr[*pos].type == OP_LESS
+           || tokens->arr[*pos].type == OP_BIGGER
+           || tokens->arr[*pos].type == OP_LESS_OR_EQUAL
+           || tokens->arr[*pos].type == OP_BIGGER_OR_EQUAL)
+    {
+        Token token = tokens->arr[*pos];
+
+        *pos += 1;
+
+        node = NewNode(token,
+                       node,
+                       GetAddSubOp(tokens, pos, tree, node),
+                       tree);
+    }
+
+    return node;
+}
+
 Node* GetAddSubOp(TokenArray* tokens, size_t* pos, Tree* tree, Node* node)
 {
     assert(tree);
@@ -380,15 +529,14 @@ Node* GetAddSubOp(TokenArray* tokens, size_t* pos, Tree* tree, Node* node)
     while (  tokens->arr[*pos].type == OP_ADD
           || tokens->arr[*pos].type == OP_SUB)
     {
-        fprintf(log_file, "<strong>Обнаружил</strong>\n\n");
-        fflush(log_file);
-
-        Token op = tokens->arr[*pos];
+        Token add_sub_token = tokens->arr[*pos];
 
         *pos += 1;
 
-        node = NewNode(op, node,
-                       GetMulDivModOp(tokens, pos, tree, node), tree);
+        node = NewNode(add_sub_token,
+                       node,
+                       GetMulDivModOp(tokens, pos, tree, node),
+                       tree);
     }
 
     return node;
@@ -410,15 +558,14 @@ Node* GetMulDivModOp(TokenArray* tokens, size_t* pos,
            || tokens->arr[*pos].type == OP_DIV
            || tokens->arr[*pos].type == OP_MOD)
     {
-        fprintf(log_file, "<strong>Обнаружил </strong>\n\n");
-        fflush(log_file);
-
-        Token op = tokens->arr[*pos];
+        Token mul_div_mod_token = tokens->arr[*pos];
 
         *pos += 1;
 
-        node = NewNode(op, node,
-                       GetPowOp(tokens, pos, tree, node), tree);
+        node = NewNode(mul_div_mod_token,
+                       node,
+                       GetPowOp(tokens, pos, tree, node),
+                       tree);
     }
 
     return node;
@@ -437,15 +584,41 @@ Node* GetPowOp(TokenArray* tokens, size_t* pos, Tree* tree, Node* node)
 
     while (tokens->arr[*pos].type == OP_POW)
     {
-        Token op = tokens->arr[*pos];
+        Token pow_token = tokens->arr[*pos];
 
         *pos += 1;
 
-        node = NewNode(op, node,
-                       GetMostPreority(tokens, pos, tree, node), tree);
+        node = NewNode(pow_token,
+                       node,
+                       GetMostPreority(tokens, pos, tree, node),
+                       tree);
     }
 
     return node;
+}
+
+Node* GetSqrt(TokenArray* tokens, size_t* pos, Tree* tree, Node* node)
+{
+    assert(tree);
+    assert(tokens);
+    assert(pos);
+
+    if (tokens->arr[*pos].type != OP_SQRT) return NULL;
+    Token sqrt_token = tokens->arr[*pos];
+    *pos += 1;
+
+    if (tokens->arr[*pos].type != KEY_LPAREN) return NULL;
+    *pos += 1;
+
+    Node* node_left = GetFirstCompareOp(tokens, pos, tree, node);
+
+    if (tokens->arr[*pos].type != KEY_RPAREN) return NULL;
+    *pos += 1;
+
+    return NewNode(sqrt_token,
+                   node_left,
+                   NULL,
+                   tree);
 }
 
 Node* GetMostPreority(TokenArray* tokens, size_t* pos,
@@ -459,6 +632,13 @@ Node* GetMostPreority(TokenArray* tokens, size_t* pos,
     fflush(log_file);
 
     node = GetFunc(tokens, pos, tree, node);
+    if (node != NULL)
+    {
+        fprintf(log_file, "<strong>Нашел вызов функции\n\n");
+        return node;
+    }
+
+    node = GetSqrt(tokens, pos, tree, node);
     if (node != NULL)
     {
         fprintf(log_file, "<strong>Нашел вызов функции\n\n");

@@ -42,7 +42,19 @@ Node* GetInitOfFunc(TokenArray* tokens, size_t* pos, Tree* tree, Node* node);
 
 Node* GetArgsOfInitFunc(TokenArray* tokens, size_t* pos, Tree* tree, Node* node);
 
+Node* GetInOutOp(TokenArray* tokens, size_t* pos, Tree* tree, Node* node);
+
 Node* GetReturnOp(TokenArray* tokens, size_t* pos, Tree* tree, Node* node);
+
+Node* GetFirstCompareOp(TokenArray* tokens, size_t* pos, Tree* tree, Node* node);
+
+Node* GetSecondCompareOp(TokenArray* tokens, size_t* pos, Tree* tree, Node* node);
+
+Node* GetThirdCompareOp(TokenArray* tokens, size_t* pos, Tree* tree, Node* node);
+
+Node* GetFourthCompareOp(TokenArray* tokens, size_t* pos, Tree* tree, Node* node);
+
+Node* GetSqrt(TokenArray* tokens, size_t* pos, Tree* tree, Node* node);
 
 Node* GetElseOp(TokenArray* tokens, size_t* pos, Tree* tree,
                 Node* node, Node* node_action);

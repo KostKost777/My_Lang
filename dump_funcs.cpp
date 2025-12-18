@@ -184,34 +184,39 @@ const char* GetNodeTypeName(Node* node)
 
     switch(node->type)
     {
-        case KEY_IF:                return "KEY_IF";
-        case KEY_ELSE:              return "KEY_ELSE";
-        case KEY_WHILE:             return "KEY_WHILE";
-        case KEY_RETURN:            return "KEY_RETURN";
-        case KEY_INT:               return "KEY_INT";
-        case KEY_LPAREN:            return "KEY_LPAREN";
-        case KEY_RPAREN:            return "KEY_RPAREN";
+        case KEY_IF:                return "if";
+        case KEY_ELSE:              return "else";
+        case KEY_WHILE:             return "while";
+        case KEY_RETURN:            return "retuen";
+        case KEY_INT:               return "int";
+        case KEY_LPAREN:            return "(";
+        case KEY_RPAREN:            return ")";
         case KEY_SEMICOLON:         return ";";
         case KEY_LBRACE:            return "\\{";
         case KEY_RBRACE:            return "\\}";
-        case OP_ASSIGNED:           return "OP_ASSIGNED";
-        case OP_EQUAL:              return "OP_EQUAL";
-        case OP_BIGGER:             return "OP_BIGGER";
-        case OP_LESS:               return "OP_LESS";
-        case OP_LESS_OR_EQUAL:      return "OP_LESS_OR_EQUAL";
-        case OP_BIGGER_OR_EQUAL:    return "OP_BIGGER_OR_EQUAL";
-        case OP_NOT_EQUAL:          return "OP_NOT_EQUAL";
-        case OP_MUL:                return "OP_MUL";
-        case OP_ADD:                return "OP_ADD";
-        case OP_SUB:                return "OP_SUB";
-        case OP_DIV:                return "OP_DIV";
-        case OP_POW:                return "OP_POW";
-        case OP_MOD:                return "OP_MOD";
+        case OP_ASSIGNED:           return "=";
+        case OP_EQUAL:              return "==";
+        case OP_BIGGER:             return ">";
+        case OP_LESS:               return "<";
+        case OP_LESS_OR_EQUAL:      return "<=";
+        case OP_BIGGER_OR_EQUAL:    return ">=L";
+        case OP_NOT_EQUAL:          return "!=";
+        case OP_MUL:                return "*";
+        case OP_ADD:                return "+";
+        case OP_SUB:                return "-";
+        case OP_DIV:                return "/";
+        case OP_POW:                return "^";
+        case OP_MOD:                return "%";
+        case OP_AND:                return "&&";
+        case OP_OR:                 return "||";
         case IDENT:                 return "IDENT";
         case NUM:                   return "NUM";
         case END:                   return "END";
         case PARAM:                 return "PARAM";
-        case KEY_COMMA:             return "KEY_COMMA";
+        case KEY_COMMA:             return ",";
+        case KEY_IN:                return "in";
+        case KEY_OUT:               return "out";
+        case OP_SQRT:               return "sqrt";
 
         default:                    return NULL;
     }
@@ -238,6 +243,7 @@ const char* GetNodeColor(Node* node)
         case OP_EQUAL:              return "#ffa551ff";
         case OP_BIGGER:             return "#ffa551ff";
         case OP_LESS:               return "#ffa551ff";
+        case OP_SQRT:               return "#ffa551ff";
         case OP_LESS_OR_EQUAL:      return "#ffa551ff";
         case OP_BIGGER_OR_EQUAL:    return "#ffa551ff";
         case OP_NOT_EQUAL:          return "#ffa551ff";
@@ -247,11 +253,15 @@ const char* GetNodeColor(Node* node)
         case OP_DIV:                return "#ffa551ff";
         case OP_POW:                return "#ffa551ff";
         case OP_MOD:                return "#ffa551ff";
+        case OP_AND:                return "#ffa551ff";
+        case OP_OR:                 return "#ffa551ff";
         case IDENT:                 return "#8791ffff";
         case NUM:                   return "#51ff51ff";
         case END:                   return "#838383ff";
         case PARAM:                 return "#dd65c9ff";
         case KEY_COMMA:             return "#828182ff";
+        case KEY_IN:                return "#ec4343ff";
+        case KEY_OUT:               return "#ec4343ff";
 
         default:                    return NULL;
     }
