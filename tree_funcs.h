@@ -2,6 +2,7 @@
 #define TREE_FUNCS
 
 #include "lexical_analysis.h"
+#include "name_table_funcs.h"
 
 struct Node
 {
@@ -17,8 +18,9 @@ struct Tree
 {
     size_t size;
     int code_err;
-
     Node* root;
+
+    NameTable name_table;
 };
 
 Status TreeCtor(Tree* tree);

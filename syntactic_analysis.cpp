@@ -33,6 +33,7 @@ Node* GetGrammer(TokenArray* tokens, size_t* pos, Tree* tree, Node* node)
     {
         fprintf(log_file, "<strong>Ошибочный токен: </strong>\n");
         PrintTokenArray(tokens, *pos);
+        PrintNameTable(tree->name_table);
     }
 
     return node;
@@ -56,6 +57,15 @@ Node* GetInitOfFunc(TokenArray* tokens, size_t* pos, Tree* tree, Node* node)
     }
 
     Token ident_token = tokens->arr[*pos];
+
+    if (IsIdentExistInNameTable(&ident_token, tree))
+    {
+        printf("ERROR1\n");
+        return NULL;
+    }
+    else
+        AddInNameTable(FUNC, &ident_token, tree);
+
     *pos += 2;
 
     Node* node_args = GetArgsOfInitFunc(tokens, pos, tree, node);
@@ -76,6 +86,8 @@ Node* GetInitOfFunc(TokenArray* tokens, size_t* pos, Tree* tree, Node* node)
         return NULL;
     *pos += 1;
 
+    tree->name_table.now_visible_space++;
+
     printf("H3\n");
     return  NewNode(GetSeparateToken(KEY_RBRACE),
                     NewNode(ident_token,
@@ -95,8 +107,6 @@ Node* GetArgsOfInitFunc(TokenArray* tokens, size_t* pos, Tree* tree, Node* node)
     fprintf(log_file, "<strong>Вызов GetArgsOfInitFunc</strong>\n");
 
     if (tokens->arr[*pos].type != KEY_INT) return NULL;
-    Token init_token = tokens->arr[*pos];
-    *pos += 1;
 
     Node* node_right = GetIdentifier(tokens, pos, tree);
 
@@ -110,7 +120,7 @@ Node* GetArgsOfInitFunc(TokenArray* tokens, size_t* pos, Tree* tree, Node* node)
     if (tokens->arr[*pos].type == KEY_COMMA)
         *pos += 1;
 
-    return NewNode(init_token,
+    return NewNode(GetSeparateToken(PARAM),
                    GetArgsOfInitFunc(tokens, pos, tree, node),
                    node_right,
                    tree);
@@ -179,11 +189,13 @@ Node* GetWhileOp(TokenArray* tokens, size_t* pos, Tree* tree, Node* node)
     if (tokens->arr[*pos].type != KEY_RBRACE) return NULL;
     *pos += 1;
 
+    fprintf(log_file,"Закончил While\n");
+
     return NewNode(GetSeparateToken(KEY_SEMICOLON),
                    NewNode(while_token,
-                        node_left,
-                        node_right,
-                        tree),
+                            node_left,
+                            node_right,
+                            tree),
                     GetOperator(tokens, pos, tree, node),
                     tree);
 }
@@ -310,8 +322,13 @@ Node* GetReturnOp(TokenArray* tokens, size_t* pos, Tree* tree, Node* node)
     if (tokens->arr[*pos].type != KEY_SEMICOLON) return NULL;
     *pos += 1;
 
+    fprintf(log_file, "Нашел Return\n");
+
     return  NewNode(GetSeparateToken(KEY_SEMICOLON),
-                    NewNode(return_token, node_left, NULL, tree),
+                    NewNode(return_token,
+                            node_left,
+                            NULL,
+                            tree),
                     NULL,
                     tree);
 }
@@ -739,6 +756,15 @@ Node* GetIdentifier(TokenArray* tokens, size_t* pos, Tree* tree)
     {
         fprintf(log_file, "<strong>Обнаружил инициализацию переменной</strong>\n\n");
         *pos += 1;
+
+        if (IsIdentExistInNameTable(&tokens->arr[*pos], tree))
+        {
+            printf("ERROR2\n");
+            return NULL;
+        }
+        else
+            AddInNameTable(VAR, &tokens->arr[*pos], tree);
+
         return NewNode(tokens->arr[*pos - 1],
                        NewNode(tokens->arr[*pos],
                                NULL,
@@ -750,6 +776,13 @@ Node* GetIdentifier(TokenArray* tokens, size_t* pos, Tree* tree)
 
     if (tokens->arr[*pos].type == IDENT)
     {
+        if (   !IsIdentExistInNameTable(&tokens->arr[*pos], tree)
+            && tokens->arr[*pos - 1].type != KEY_INT)
+            {
+            printf("ERROR3  %s\n", tokens->arr[*pos].lexeme.str.name);
+            return NULL;
+            }
+
         fprintf(log_file, "<strong>Нашел индификатор</strong>\n\n");
         return NewNode(tokens->arr[*pos], NULL, NULL, tree);
     }
@@ -761,4 +794,54 @@ Token GetSeparateToken(Type type)
 {
     Token separate_token = {type, 0, 0, 0};
     return separate_token;
+}
+
+bool IsIdentExistInNameTable(Token* token, Tree* tree)
+{
+    assert(tree);
+    assert(token);
+
+    PrintNameTable(tree->name_table);
+
+    for (size_t i = 0; i < tree->name_table.size; ++i)
+    {
+        if (IsIdentEqual(tree->name_table.arr[i], token, tree))
+        {
+            fprintf(log_file, "Этот индификатор |%s| уже объявлен",
+                                            token->lexeme.str.name);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void AddInNameTable(IdentType type, Token* token, Tree* tree)
+{
+    tree->name_table.arr[tree->name_table.size].hash = token->lexeme.str.hash;
+    tree->name_table.arr[tree->name_table.size].name = token->lexeme.str.name;
+    tree->name_table.arr[tree->name_table.size].type = type;
+    tree->name_table.arr[tree->name_table.size].visible_space
+                        = tree->name_table.now_visible_space;
+    tree->name_table.size++;
+
+    PrintNameTable(tree->name_table);
+}
+
+bool IsIdentEqual(NameTableEl name_table_el, Token* token, Tree* tree)
+{
+    assert(token);
+    assert(tree);
+
+    char* ident_name  = token->lexeme.str.name;
+    size_t ident_hash = token->lexeme.str.hash;
+
+    if (name_table_el.type == FUNC)
+        return  name_table_el.hash == ident_hash
+            &&  strcmp(name_table_el.name, ident_name) == 0;
+
+    return  name_table_el.hash == ident_hash
+            &&  strcmp(name_table_el.name, ident_name) == 0
+            &&  tree->name_table.now_visible_space ==
+                name_table_el.visible_space;
 }

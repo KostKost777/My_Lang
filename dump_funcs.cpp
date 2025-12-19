@@ -3,6 +3,7 @@
 #include "dump_funcs.h"
 #include "lexical_analysis.h"
 #include "tree_funcs.h"
+#include "name_table_funcs.h"
 
 FILE* log_file = NULL;
 const char* log_file_name = "lang_log_file.html";
@@ -170,7 +171,7 @@ void FillLogFile(char* image_file_name,  Tree* tree, int file_counter)
 
     const int PICTURE_WIDTH = 2000;
 
-    fprintf(log_file, "\n\n<img src=Images\\image%d.svg width=%dpx>\n\n",
+    fprintf(log_file, "\n\n<img src=image%d.svg width=%dpx>\n\n",
                        file_counter, PICTURE_WIDTH);
 
     fprintf(log_file, "--------------------------------------------------------------------------------------------------------------------------------------------\n\n");
@@ -187,7 +188,7 @@ const char* GetNodeTypeName(Node* node)
         case KEY_IF:                return "if";
         case KEY_ELSE:              return "else";
         case KEY_WHILE:             return "while";
-        case KEY_RETURN:            return "retuen";
+        case KEY_RETURN:            return "return";
         case KEY_INT:               return "int";
         case KEY_LPAREN:            return "(";
         case KEY_RPAREN:            return ")";
@@ -196,10 +197,10 @@ const char* GetNodeTypeName(Node* node)
         case KEY_RBRACE:            return "\\}";
         case OP_ASSIGNED:           return "=";
         case OP_EQUAL:              return "==";
-        case OP_BIGGER:             return ">";
-        case OP_LESS:               return "<";
+        case OP_BIGGER:             return "\\>";
+        case OP_LESS:               return "\\<";
         case OP_LESS_OR_EQUAL:      return "<=";
-        case OP_BIGGER_OR_EQUAL:    return ">=L";
+        case OP_BIGGER_OR_EQUAL:    return ">=";
         case OP_NOT_EQUAL:          return "!=";
         case OP_MUL:                return "*";
         case OP_ADD:                return "+";
@@ -273,7 +274,8 @@ static char* GetNewDotCmd(int file_counter)
     char str_command[100] = "";
 
     snprintf(str_command, sizeof(str_command),
-            "dot -Tsvg Images\\image%d.txt -o Images\\image%d.svg",
+            "dot -Tsvg image%d.txt "
+            "-o image%d.svg",
              file_counter, file_counter);
 
     return strdup(str_command);
@@ -284,7 +286,7 @@ static char* GetNewImageFileName(int file_counter)
     char str_file_counter[100] = "";
 
     snprintf(str_file_counter, sizeof(str_file_counter),
-             "Images\\image%d.txt", file_counter);
+             "image%d.txt", file_counter);
 
     return strdup(str_file_counter);
 }
@@ -308,6 +310,20 @@ void PrintTokenArray(TokenArray* tokens, size_t begin_pos)
                                    tokens->arr[i].column);
 
         fprintf(log_file, "\n----------------------------\n\n");
+    }
+}
+
+void PrintNameTable(NameTable name_table)
+{
+    fprintf(log_file, "NOW_VISIBLE_SPACE: %llu\n",
+                        name_table.now_visible_space);
+
+    for (size_t i = 0; i < name_table.size; ++i)
+    {
+        fprintf(log_file, "TYPE: %d | NAME: |%s| | VISIBLE: %llu\n",
+                                    name_table.arr[i].type,
+                                    name_table.arr[i].name,
+                                    name_table.arr[i].visible_space);
     }
 }
 

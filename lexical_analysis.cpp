@@ -81,21 +81,34 @@ Status ParseNumber(Buffer* buffer, size_t* pos, TokenArray* tokens)
     assert(pos);
     assert(tokens);
 
-    int sign = GetSignOfNumber(buffer, pos);
-    if (sign == 0) return error;
-
+    int len = 0;
     int num = 0;
 
-    while(isdigit(buffer->data[*pos]))
-    {
-        num *= 10;
-        num += (buffer->data[*pos] - '0');
-        MoveBufferPointer(buffer, pos, 1);
-    }
+    int status = sscanf(buffer->data + *pos, "%d%n", &num, &len);
+
+    if (status == 0) return error;
+
+    MoveBufferPointer(buffer, pos, (size_t)len);
 
     //printf("NUM: %d\n", num);
     AddNumToken(tokens, buffer, NUM, num);
     SkipSpaces(buffer, pos);
+
+//     int sign = GetSignOfNumber(buffer, pos);
+//     if (sign == 0) return error;
+//
+//     int num = 0;
+//
+//     while(isdigit(buffer->data[*pos]))
+//     {
+//         num *= 10;
+//         num += (buffer->data[*pos] - '0');
+//         MoveBufferPointer(buffer, pos, 1);
+//     }
+//
+//     //printf("NUM: %d\n", num);
+//     AddNumToken(tokens, buffer, NUM, num);
+//     SkipSpaces(buffer, pos);
 
     return success;
 }

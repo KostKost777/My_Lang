@@ -13,6 +13,10 @@ void WriteTreeInFile(Tree* tree, const char* out_file_name)
 
     WriteNode(tree->root, out_file);
 
+    fprintf(out_file, "\n");
+
+    WriteNameTable(tree->name_table, out_file);
+
     fclose(out_file);
 }
 
@@ -54,6 +58,37 @@ void WriteNodeData(Node* node, FILE* out_file)
     else if (node->type == KEY_RBRACE)
         fprintf(out_file,"} ");
 
+    else if (node->type == OP_BIGGER)
+        fprintf(out_file,"> ");
+
+    else if (node->type == OP_LESS)
+        fprintf(out_file,"< ");
+
     else
         fprintf(out_file, "%s ", GetNodeTypeName(node));
+}
+
+void WriteNameTable(NameTable name_table, FILE* out_file)
+{
+    assert(out_file);
+
+    for (size_t i = 0; i < name_table.size; ++i)
+    {
+        fprintf(out_file, "%s    %s\n",
+                GetTypeOfNameTableEl(name_table.arr[i].type),
+                name_table.arr[i].name);
+    }
+}
+
+const char* GetTypeOfNameTableEl(IdentType type)
+{
+    switch(type)
+    {
+        case FUNC: return "FUNC";
+        case VAR:  return "VAR";
+
+        default: return NULL;
+    }
+
+    return NULL;
 }

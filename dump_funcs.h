@@ -6,6 +6,7 @@ extern const char* log_file_name;
 
 #include "lexical_analysis.h"
 #include "tree_funcs.h"
+#include "name_table_funcs.h"
 
 void PrintTokenArray(TokenArray* tokens, size_t begin_pos);
 
@@ -32,6 +33,8 @@ void PrintTree(Node* node, FILE* graphiz_file);
 char* ConvertEncoding(char* win1251);
 
 const char* GetNodeColor(Node* node);
+
+void PrintNameTable(NameTable name_table);
 
 void CloseLogFile();
 void OpenLogFile();

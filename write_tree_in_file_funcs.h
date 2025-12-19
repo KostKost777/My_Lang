@@ -9,4 +9,8 @@ void WriteNode(Node* node, FILE* out_file);
 
 void WriteNodeData(Node* node, FILE* out_file);
 
+const char* GetTypeOfNameTableEl(IdentType type);
+
+void WriteNameTable(NameTable name_table, FILE* out_file);
+
 #endif

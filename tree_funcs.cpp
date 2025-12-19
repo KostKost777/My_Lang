@@ -1,6 +1,7 @@
 #include <TXLib.h>
 
 #include "tree_funcs.h"
+#include "name_table_funcs.h"
 
 Status TreeCtor(Tree* tree)
 {
@@ -8,6 +9,8 @@ Status TreeCtor(Tree* tree)
 
     tree->size = 0;
     tree->root = NULL;
+
+    NameTableCtor(&tree->name_table);
 
     return success;
 }

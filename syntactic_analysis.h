@@ -59,4 +59,10 @@ Node* GetSqrt(TokenArray* tokens, size_t* pos, Tree* tree, Node* node);
 Node* GetElseOp(TokenArray* tokens, size_t* pos, Tree* tree,
                 Node* node, Node* node_action);
 
+void AddInNameTable(IdentType type, Token* token, Tree* tree);
+
+bool IsIdentExistInNameTable(Token* token, Tree* tree);
+
+bool IsIdentEqual(NameTableEl name_table_el, Token* token, Tree* tree);
+
 #endif

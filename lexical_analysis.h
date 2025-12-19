@@ -3,8 +3,8 @@
 
 #include "read_from_file_funcs.h"
 
-const int DEFAULT_TOKEN_ARR_SIZE = 100;
-const int MAX_LEN_OF_WORD = 100;
+const int DEFAULT_TOKEN_ARR_SIZE = 500;
+const int MAX_LEN_OF_WORD = 500;
 
 enum Status
 {
