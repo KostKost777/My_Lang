@@ -3,7 +3,7 @@
 
 #include "../Frontend/lexical_analysis.h"
 
-const int NUM_OF_BASEWORDS = 26;
+const int NUM_OF_BASEWORDS = 27;
 
 struct BaseWord
 {

@@ -34,7 +34,9 @@ char* ConvertEncoding(char* win1251);
 
 const char* GetNodeColor(Node* node);
 
-void PrintNameTable(NameTable name_table);
+void PrintNameTable(NameTable* name_table);
+
+void PrintNameTableInAsm(NameTable* name_table);
 
 void CloseLogFile();
 void OpenLogFile();

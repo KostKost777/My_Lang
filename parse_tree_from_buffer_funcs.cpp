@@ -15,7 +15,7 @@ Node* FillNodeDataFromBuffer(char** cur_pos, size_t* size, Node* parent)
 
     const int NIL_LEN = 3;
 
-    fprintf(log_file, "<h2>=======РќРѕРІС‹Р№ РІС‹Р·РѕРІ С„СѓРЅРєС†РёРё СЃРѕР·РґР°РЅРёСЏ СѓР·Р»Р°=======</h2>\n\n");
+    fprintf(log_file, "<h2>=======Новый вызов функции создания узла=======</h2>\n\n");
 
     fprintf(log_file, "<strong>BUFFER:</strong> \n|%s|\n\n", *cur_pos);
     fprintf(log_file, "<strong>SIZE:</strong> %llu \n\n", *size);
@@ -24,10 +24,10 @@ Node* FillNodeDataFromBuffer(char** cur_pos, size_t* size, Node* parent)
 
     if (**cur_pos == '(')
     {
-        fprintf(log_file, "<strong>РћР±РЅР°СЂСѓР¶РёР» СЃРєРѕР±РєСѓ \"(\"</strong>\n\n");
+        fprintf(log_file, "<strong>Обнаружил скобку \"(\"</strong>\n\n");
 
         *cur_pos += 1;
-        fprintf(log_file, "<strong>РџСЂРѕРїСѓСЃС‚РёР» СЃРєРѕР±РєСѓ:</strong> \n|%s|\n\n", *cur_pos);
+        fprintf(log_file, "<strong>Пропустил скобку:</strong> \n|%s|\n\n", *cur_pos);
 
         SkipSpaces(cur_pos);
 
@@ -35,7 +35,7 @@ Node* FillNodeDataFromBuffer(char** cur_pos, size_t* size, Node* parent)
         RaedNode(cur_pos, node);
         node->parent = parent;
 
-        fprintf(log_file, "<strong>РЎРѕР·РґР°Р» РЅРѕРІСѓСЋ РІРµСЂС€РёРЅСѓ</strong>\n"
+        fprintf(log_file, "<strong>Создал новую вершину</strong>\n"
                           "<strong>NODE_PTR:</strong> %p \n"
                           "<strong>TYPE:</strong> |%s| \n"
                           "<strong>BUFFER:</strong> %s \n\n",
@@ -43,27 +43,27 @@ Node* FillNodeDataFromBuffer(char** cur_pos, size_t* size, Node* parent)
 
         *size += 1;
 
-        fprintf(log_file, "<strong>РЈРІРµР»РёС‡РёР» СЂР°Р·РјРµСЂ SIZE:</strong> %llu \n\n", *size);
+        fprintf(log_file, "<strong>Увеличил размер SIZE:</strong> %llu \n\n", *size);
 
         node->left = FillNodeDataFromBuffer(cur_pos, size, node);
 
-        fprintf(log_file, "<strong>Р—Р°РІРµСЂС€РёР» Р»РµРІС‹Р№ СѓР·РµР»:</strong> %p \n"
-                          "<strong>РЈ СЌС‚РѕРіРѕ СѓР·Р»Р°:</strong> %p \n",
+        fprintf(log_file, "<strong>Завершил левый узел:</strong> %p \n"
+                          "<strong>У этого узла:</strong> %p \n",
                                                 node, node);
 
         node->right = FillNodeDataFromBuffer(cur_pos, size, node);
 
-        fprintf(log_file, "<strong>Р—Р°РІРµСЂС€РёР» РїСЂР°РІС‹Р№ СѓР·РµР»:</strong> %p "
-                          "<strong>РЈ СЌС‚РѕРіРѕ СѓР·Р»Р°:</strong> %p ",
+        fprintf(log_file, "<strong>Завершил правый узел:</strong> %p "
+                          "<strong>У этого узла:</strong> %p ",
                                                  node, node);
 
         SkipSpaces(cur_pos);
 
         *cur_pos += 1;
 
-        fprintf(log_file, "РџСЂРѕРїСѓСЃС‚РёР» \")\": \n|%s|\n\n", *cur_pos);
+        fprintf(log_file, "Пропустил \")\": \n|%s|\n\n", *cur_pos);
 
-        fprintf(log_file, "<strong>РЎРµР№С‡Р°СЃ РІРµСЂРЅСѓ СЌС‚РѕС‚ СѓРєР°Р·Р°С‚РµР»СЊ %p</strong> \n\n",
+        fprintf(log_file, "<strong>Сейчас верну этот указатель %p</strong> \n\n",
                                                                        node);
 
         return node;
@@ -73,7 +73,7 @@ Node* FillNodeDataFromBuffer(char** cur_pos, size_t* size, Node* parent)
     {
         *cur_pos += NIL_LEN;
 
-        fprintf(log_file, "<strong>РџСЂРѕРїСѓСЃС‚РёР» \"nil\":</strong> \n|%s|\n\n", *cur_pos);
+        fprintf(log_file, "<strong>Пропустил \"nil\":</strong> \n|%s|\n\n", *cur_pos);
 
         SkipSpaces(cur_pos);
 
@@ -96,9 +96,9 @@ void RaedNode(char** cur_pos, Node* node)
     {
         node->type = NUM;
         node->lexeme.num = num;
-        fprintf(log_file, "<strong>Р”Рѕ РїСЂРѕРїСѓСЃРєР° С‡РёСЃР»Р°:</strong> \n|%s| \n\n", *cur_pos);
+        fprintf(log_file, "<strong>До пропуска числа:</strong> \n|%s| \n\n", *cur_pos);
         *cur_pos += len;
-        fprintf(log_file, "<strong>РџСЂРѕРїСѓСЃС‚РёР» С‡РёСЃР»Рѕ:</strong> \n|%s| \n\n", *cur_pos);
+        fprintf(log_file, "<strong>Пропустил число:</strong> \n|%s| \n\n", *cur_pos);
         return;
     }
 
@@ -106,13 +106,13 @@ void RaedNode(char** cur_pos, Node* node)
 
     sscanf(*cur_pos, "%s%n", ident_name, &len);
 
-    fprintf(log_file, "<strong>РџРѕСЃС‡РёС‚Р°Р» РґР»РёРЅСѓ РЅРѕРІРѕРіРѕ РёРјРµРЅРё LEN:</strong> %d\n\n", len);
+    fprintf(log_file, "<strong>Посчитал длину нового имени LEN:</strong> %d\n\n", len);
 
-    fprintf(log_file, "<strong>Р”Рѕ РїСЂРѕРїСѓСЃРєР° СЃР»РѕРІР°:</strong> \n|%s| \n\n", *cur_pos);
+    fprintf(log_file, "<strong>До пропуска слова:</strong> \n|%s| \n\n", *cur_pos);
     *cur_pos += len;
-    fprintf(log_file, "<strong>РџСЂРѕРїСѓСЃС‚РёР» СЃР»РѕРІРѕ:</strong> \n|%s| \n\n", *cur_pos);
+    fprintf(log_file, "<strong>Пропустил слово:</strong> \n|%s| \n\n", *cur_pos);
 
-    fprintf(log_file, "<strong>РўСѓС‚ Р¶Рµ РїРѕР»СѓС‡РёР» РёРјСЏ NAME:</strong> |%s|\n\n", ident_name);
+    fprintf(log_file, "<strong>Тут же получил имя NAME:</strong> |%s|\n\n", ident_name);
 
     node->type = GetNodeType(ident_name);
     node->lexeme.str.name = strdup(ident_name);
@@ -125,15 +125,13 @@ Type GetNodeType(char* ident_name)
 
     for (size_t i = 0; i < NUM_OF_BASEWORDS; ++i)
     {
-        printf("IDENT_NAME: %s   BASEWORD: %s\n", ident_name, basewords_arr[i].name);
+        //printf("IDENT_NAME: %s   BASEWORD: %s\n", ident_name, basewords_arr[i].name);
         if (basewords_arr[i].hash == hash
             && strcmp(ident_name, basewords_arr[i].name) == 0)
             return basewords_arr[i].type;
     }
 
-    //unreachable
-    assert(false);
-    return KEY_RETURN;
+    return IDENT;
 }
 
 bool IsNil(char* cur_pos)
@@ -141,7 +139,7 @@ bool IsNil(char* cur_pos)
     char checker[4] = {};
 
     sscanf(cur_pos, "%3s", checker);
-    fprintf(log_file, "<strong>РџСЂРѕС‡РёС‚Р°Р» РїРѕС‚РµРЅС†РёР°Р»СЊРЅС‹Р№ NIL РїРѕР»СѓС‡РёР»:</strong> |%s|\n\n",
+    fprintf(log_file, "<strong>Прочитал потенциальный NIL получил:</strong> |%s|\n\n",
                                                                              checker);
     if (strcmp(checker, "nil") == 0)
         return true;
@@ -153,11 +151,11 @@ void SkipSpaces(char** cur_pos)
 {
     assert(cur_pos);
 
-    fprintf(log_file, "<strong>РџСЂРѕРїСѓСЃРєР°СЋ РІСЃРµ РїСЂРѕР±РµР»СЊРЅС‹Рµ СЃРёРјРІРѕР»С‹</strong>\n\n");
-    fprintf(log_file, "<strong>Р”Рѕ РїСЂРѕРїСѓСЃРєР° BUFFER:</strong> \n|%s|\n\n", *cur_pos);
+    fprintf(log_file, "<strong>Пропускаю все пробельные символы</strong>\n\n");
+    fprintf(log_file, "<strong>До пропуска BUFFER:</strong> \n|%s|\n\n", *cur_pos);
 
     while (isspace(**cur_pos))
         *cur_pos += 1;
 
-    fprintf(log_file, "<strong>РџРѕСЃР»Рµ РїСЂРѕРїСѓСЃРєР° BUFFER:</strong> \n|%s|\n\n", *cur_pos);
+    fprintf(log_file, "<strong>После пропуска BUFFER:</strong> \n|%s|\n\n", *cur_pos);
 }

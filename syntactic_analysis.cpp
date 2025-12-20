@@ -86,7 +86,7 @@ Node* GetInitOfFunc(TokenArray* tokens, size_t* pos, Tree* tree, Node* node)
         return NULL;
     *pos += 1;
 
-    tree->name_table.now_visible_space++;
+    tree->name_table->now_visible_space++;
 
     printf("H3\n");
     return  NewNode(GetSeparateToken(KEY_RBRACE),
@@ -803,9 +803,9 @@ bool IsIdentExistInNameTable(Token* token, Tree* tree)
 
     PrintNameTable(tree->name_table);
 
-    for (size_t i = 0; i < tree->name_table.size; ++i)
+    for (size_t i = 0; i < tree->name_table->size; ++i)
     {
-        if (IsIdentEqual(tree->name_table.arr[i], token, tree))
+        if (IsIdentEqual(tree->name_table->arr[i], token, tree))
         {
             fprintf(log_file, "Этот индификатор |%s| уже объявлен",
                                             token->lexeme.str.name);
@@ -818,12 +818,12 @@ bool IsIdentExistInNameTable(Token* token, Tree* tree)
 
 void AddInNameTable(IdentType type, Token* token, Tree* tree)
 {
-    tree->name_table.arr[tree->name_table.size].hash = token->lexeme.str.hash;
-    tree->name_table.arr[tree->name_table.size].name = token->lexeme.str.name;
-    tree->name_table.arr[tree->name_table.size].type = type;
-    tree->name_table.arr[tree->name_table.size].visible_space
-                        = tree->name_table.now_visible_space;
-    tree->name_table.size++;
+    tree->name_table->arr[tree->name_table->size].hash = token->lexeme.str.hash;
+    tree->name_table->arr[tree->name_table->size].name = strdup(token->lexeme.str.name);
+    tree->name_table->arr[tree->name_table->size].type = type;
+    tree->name_table->arr[tree->name_table->size].visible_space
+                        = tree->name_table->now_visible_space;
+    tree->name_table->size++;
 
     PrintNameTable(tree->name_table);
 }
@@ -842,6 +842,6 @@ bool IsIdentEqual(NameTableEl name_table_el, Token* token, Tree* tree)
 
     return  name_table_el.hash == ident_hash
             &&  strcmp(name_table_el.name, ident_name) == 0
-            &&  tree->name_table.now_visible_space ==
+            &&  tree->name_table->now_visible_space ==
                 name_table_el.visible_space;
 }

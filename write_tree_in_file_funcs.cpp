@@ -68,15 +68,17 @@ void WriteNodeData(Node* node, FILE* out_file)
         fprintf(out_file, "%s ", GetNodeTypeName(node));
 }
 
-void WriteNameTable(NameTable name_table, FILE* out_file)
+void WriteNameTable(NameTable* name_table, FILE* out_file)
 {
     assert(out_file);
 
-    for (size_t i = 0; i < name_table.size; ++i)
+    for (size_t i = 0; i < name_table->size; ++i)
     {
+        if (IsPlaceForMain(name_table, i))
+            fprintf(out_file, "FUNC    main\n");
         fprintf(out_file, "%s    %s\n",
-                GetTypeOfNameTableEl(name_table.arr[i].type),
-                name_table.arr[i].name);
+                GetTypeOfNameTableEl(name_table->arr[i].type),
+                name_table->arr[i].name);
     }
 }
 
@@ -91,4 +93,15 @@ const char* GetTypeOfNameTableEl(IdentType type)
     }
 
     return NULL;
+}
+
+bool IsPlaceForMain(NameTable* name_table, size_t index)
+{
+    assert(name_table);
+
+    return index >= 1
+           && name_table->arr[index].type
+              == name_table->arr[index - 1].type
+           && name_table->arr[index].visible_space
+              != name_table->arr[index - 1].visible_space;
 }

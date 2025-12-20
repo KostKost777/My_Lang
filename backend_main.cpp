@@ -4,6 +4,7 @@
 #include "../Frontend/tree_funcs.h"
 #include "../Frontend/read_from_file_funcs.h"
 #include "parse_tree_from_buffer_funcs.h"
+#include "parse_tree_in_asm_funcs.h"
 
 const char* source_file_name = "../Examples/outfile.txt";
 
@@ -24,7 +25,16 @@ int main (const int argc, const char** argv)
     char* cur_pos = buffer.data;
     tree.root = FillNodeDataFromBuffer(&cur_pos, &tree.size, tree.root);
 
+    printf("BUFFER: %s", cur_pos);
+
+    FillNameTableFromBuffer(tree.name_table, cur_pos);
+    PrintNameTableInAsm(tree.name_table);
+
     TreeDump(&tree);
 
+    ParseAsmTreeInAsmFile(&tree, tree.root);
+
+    NameTableDtor(tree.name_table);
+    TreeDtor(&tree);
     BufferDtor(&buffer);
 }

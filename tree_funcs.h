@@ -20,7 +20,7 @@ struct Tree
     int code_err;
     Node* root;
 
-    NameTable name_table;
+    NameTable* name_table;
 };
 
 Status TreeCtor(Tree* tree);

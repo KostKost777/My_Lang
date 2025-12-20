@@ -10,7 +10,7 @@ Status TreeCtor(Tree* tree)
     tree->size = 0;
     tree->root = NULL;
 
-    NameTableCtor(&tree->name_table);
+    tree->name_table = NameTableCtor();
 
     return success;
 }
@@ -60,9 +60,6 @@ void DeleteNode(Tree* tree, Node* node)
 
     free(node->right);
     node->right = NULL;
-
-    free(node->lexeme.str.name);
-    node->lexeme.str.hash = 0;
 }
 
 Node* NewNode(Token token, Node* left, Node* right, Tree* tree)

@@ -8,7 +8,7 @@
 #include "write_tree_in_file_funcs.h"
 
 const char* source_file_name = "../Examples/factorial.txt";
-const char* out_file_name = "outfile.txt";
+const char* out_file_name = "../Examples/outfile.txt";
 
 int main(const int argv, const char** argc)
 {
@@ -40,4 +40,6 @@ int main(const int argv, const char** argc)
     WriteTreeInFile(&tree, out_file_name);
 
     TokenArrayDtor(&tokens);
+    NameTableDtor(tree.name_table);
+    TreeDtor(&tree);
 }

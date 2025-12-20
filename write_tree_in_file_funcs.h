@@ -11,6 +11,8 @@ void WriteNodeData(Node* node, FILE* out_file);
 
 const char* GetTypeOfNameTableEl(IdentType type);
 
-void WriteNameTable(NameTable name_table, FILE* out_file);
+void WriteNameTable(NameTable* name_table, FILE* out_file);
+
+bool IsPlaceForMain(NameTable* name_table, size_t index);
 
 #endif

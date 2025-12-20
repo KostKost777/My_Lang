@@ -7,6 +7,7 @@
 BaseWord basewords_arr[NUM_OF_BASEWORDS] =
 {
 {KEY_IF,             "if",         GetHash("if")},    //if
+{PARAM,              "PARAM",      GetHash("PARAM")},
 {KEY_ELSE,           "else",       GetHash("else")},    //else
 {KEY_WHILE,          "while",      GetHash("while")},           //while
 {KEY_RETURN,         "return",     GetHash("return")},        //return

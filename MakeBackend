@@ -3,7 +3,7 @@ BUILD_DIR = builds/
 
 all: back
 
-back: $(BUILD_DIR)name_table_funcs.o $(BUILD_DIR)parse_tree_from_buffer_funcs.o $(BUILD_DIR)hash_funcs.o $(BUILD_DIR)basewords_backend.o $(BUILD_DIR)read_from_file_funcs.o $(BUILD_DIR)dump_funcs.o $(BUILD_DIR)backend_main.o $(BUILD_DIR)tree_funcs.o
+back: $(BUILD_DIR)parse_tree_in_asm_funcs.o $(BUILD_DIR)name_table_funcs.o $(BUILD_DIR)parse_tree_from_buffer_funcs.o $(BUILD_DIR)hash_funcs.o $(BUILD_DIR)basewords_backend.o $(BUILD_DIR)read_from_file_funcs.o $(BUILD_DIR)dump_funcs.o $(BUILD_DIR)backend_main.o $(BUILD_DIR)tree_funcs.o
 	g++ $(FLAGS) $^ -o back
 
 $(BUILD_DIR)backend_main.o: backend_main.cpp
@@ -28,6 +28,9 @@ $(BUILD_DIR)parse_tree_from_buffer_funcs.o: parse_tree_from_buffer_funcs.cpp
 	g++ $(FLAGS) -c $< -o $@
 
 $(BUILD_DIR)name_table_funcs.o: ../Frontend/name_table_funcs.cpp
+	g++ $(FLAGS) -c $< -o $@
+
+$(BUILD_DIR)parse_tree_in_asm_funcs.o: parse_tree_in_asm_funcs.cpp
 	g++ $(FLAGS) -c $< -o $@
 
 clean:

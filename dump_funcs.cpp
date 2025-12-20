@@ -313,23 +313,41 @@ void PrintTokenArray(TokenArray* tokens, size_t begin_pos)
     }
 }
 
-void PrintNameTable(NameTable name_table)
+void PrintNameTable(NameTable* name_table)
 {
     fprintf(log_file, "NOW_VISIBLE_SPACE: %llu\n",
-                        name_table.now_visible_space);
+                        name_table->now_visible_space);
 
-    for (size_t i = 0; i < name_table.size; ++i)
+    for (size_t i = 0; i < name_table->size; ++i)
     {
         fprintf(log_file, "TYPE: %d | NAME: |%s| | VISIBLE: %llu\n",
-                                    name_table.arr[i].type,
-                                    name_table.arr[i].name,
-                                    name_table.arr[i].visible_space);
+                                    name_table->arr[i].type,
+                                    name_table->arr[i].name,
+                                    name_table->arr[i].visible_space);
+    }
+}
+
+void PrintNameTableInAsm(NameTable* name_table)
+{
+    for (size_t i = 0; i < name_table->size; ++i)
+    {
+        if (name_table->arr[i].type == VAR)
+            fprintf(log_file, "TYPE: %d | NAME: |%s| | ADDRESS: %llu\n",
+                                    name_table->arr[i].type,
+                                    name_table->arr[i].name,
+                                    name_table->arr[i].address);
+        else
+            fprintf(log_file, "TYPE: %d | NAME: |%s| | FUNC_PTR: %s\n",
+                                    name_table->arr[i].type,
+                                    name_table->arr[i].name,
+                                    name_table->arr[i].func_ptr);
+
     }
 }
 
 char* ConvertEncoding(char* win1251)
 {
-    if (win1251 == NULL) return "";
+    if (win1251 == NULL) return NULL;
 
     size_t win1251_size = strlen(win1251);
     size_t utf8_size = 0;
