@@ -4,6 +4,9 @@
 #include "../Frontend/tree_funcs.h"
 #include "../Frontend/dump_funcs.h"
 
+const int SIZE_OF_FRAME = 5;
+const int MAX_PTR = 1000;
+
 void ParseAsmTreeInAsmFile(Tree* tree, Node* node);
 
 void ParseAsmFunc(Tree* tree, Node* node);
@@ -36,6 +39,8 @@ Status ParseAsmNotEqual(Tree* tree, Node* node, Lexeme* func_info);
 
 Status ParseAsmLess(Tree* tree, Node* node, Lexeme* func_info);
 
+bool IsInvalidNum(int mem_ptr);
+
 Status ParseAsmNumber(Tree* tree, Node* node);
 
 Status ParseAsmADD(Tree* tree, Node* node);
@@ -63,6 +68,8 @@ size_t GetIndexOfFuncInNameTable(NameTable* name_table, Lexeme* func_info);
 Status ParseAsmCallFunc(Tree* tree, Node* node, Lexeme* func_info);
 
 void PrintFuncName(NameTable* name_table, Lexeme* func_info);
+
+void ParseMain(Tree* tree, Node* node, Lexeme* main);
 
 Lexeme GetMainLexeme();
 

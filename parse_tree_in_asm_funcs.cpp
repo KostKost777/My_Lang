@@ -18,17 +18,31 @@ void ParseAsmTreeInAsmFile(Tree* tree, Node* node)
 
     asm_file = fopen(asm_file_name, "w");
 
+    Lexeme main = GetMainLexeme();
+    ParseMain(tree, node, &main);
+
     while(node->type == KEY_LBRACE)
     {
         ParseAsmFunc(tree, node->left);
         node = node->right;
     }
 
-    Lexeme main = GetMainLexeme();
-    ParseAsmOperator(tree, node, &main);
-
     fclose(asm_file);
     printf("\nEND");
+}
+
+void ParseMain(Tree* tree, Node* node, Lexeme* main)
+{
+    assert(tree);
+    assert(node);
+    assert(main);
+
+    while(node->type == KEY_LBRACE)
+        node = node->right;
+
+    ParseAsmOperator(tree, node, main);
+    fprintf(asm_file, "HLT\n\n");
+
 }
 
 void ParseAsmFunc(Tree* tree, Node* node)
@@ -102,7 +116,13 @@ void ParseAsmReturn(Tree* tree, Node* node, Lexeme* func_info)
 
     ParseAsmExpression(tree, node->left, func_info);
 
-    fprintf(asm_file, "RET\n");
+    fprintf(asm_file, "\nPOPREG AX    ;×ÅÐÅÇ AX ÂÎÇÂÀÐÀÙÀÅÌ ÇÍÀ×ÅÍÈß\n");
+    fprintf(asm_file, "PUSHREG HX\n");
+    fprintf(asm_file, "PUSH %d     ;ÐÀÇÌÅÐ ÑÒÅÊÎÂÎÃÎ ÔÐÅÉÌÀ\n", SIZE_OF_FRAME);
+    fprintf(asm_file, "SUB\n");
+    fprintf(asm_file, "POPREG HX\n");
+
+    fprintf(asm_file, "RET\n\n");
 }
 
 void ParseAsmIn(Tree* tree, Node* node, Lexeme* func_info)
@@ -144,12 +164,12 @@ void ParseAsmIf(Tree* tree, Node* node, Lexeme* func_info)
 
     ParseAsmExpression(tree, node->left, func_info);
 
-    fprintf(asm_file, "PUSH 0\n");
+    fprintf(asm_file, "\nPUSH 0\n");
     fprintf(asm_file, "JE :endif_%d\n", counter);
 
     ParseAsmOperator(tree, node->right, func_info);
 
-    fprintf(asm_file, ":endif_%d\n", counter);
+    fprintf(asm_file, ":endif_%d\n\n", counter);
 
     counter++;
 }
@@ -164,18 +184,18 @@ void ParseAsmWhile(Tree* tree, Node* node, Lexeme* func_info)
 
     static int counter = 0;
 
-    fprintf(asm_file, ":begin_while_%d\n", counter);
+    fprintf(asm_file, "\n:begin_while_%d\n", counter);
 
     ParseAsmExpression(tree, node->left, func_info);
 
-    fprintf(asm_file, "PUSH 0\n");
-    fprintf(asm_file, "JE :endwhile_%d\n", counter);
+    fprintf(asm_file, "\nPUSH 0\n");
+    fprintf(asm_file, "JE :endwhile_%d\n\n", counter);
 
     ParseAsmOperator(tree, node->right, func_info);
 
-    fprintf(asm_file, "JMP :begin_while_%d\n", counter);
+    fprintf(asm_file, "\nJMP :begin_while_%d\n\n", counter);
 
-    fprintf(asm_file, ":endwhile_%d\n", counter);
+    fprintf(asm_file, "\n:endwhile_%d\n\n", counter);
 
     counter++;
 }
@@ -192,14 +212,16 @@ void ParseAsmIfElse(Tree* tree, Node* node, Lexeme* func_info)
 
     ParseAsmExpression(tree, node->left, func_info);
 
-    fprintf(asm_file, "PUSH 0\n");
-    fprintf(asm_file, "JE :endif_with_else_%d\n", counter);
+    fprintf(asm_file, "\nPUSH 0\n");
+    fprintf(asm_file, "JE :endif_with_else_%d\n\n", counter);
 
     ParseAsmOperator(tree, node->right->left, func_info);
 
-    fprintf(asm_file, ":endif_with_else_%d\n", counter);
+    fprintf(asm_file, "\n:endif_with_else_%d\n\n", counter);
 
     ParseAsmOperator(tree, node->right->right, func_info);
+
+    fprintf(asm_file, "\n\n");
 
     counter++;
 }
@@ -212,7 +234,7 @@ void ParseAsmExpression(Tree* tree, Node* node, Lexeme* func_info)
 
     fprintf(log_file, "Âûçîâ ParseAsmExpression\n");
 
-    if (node->left != NULL)
+    if (node->left != NULL && node->left->type != PARAM)
         ParseAsmExpression(tree, node->left, func_info);
 
     if (node->right != NULL)
@@ -266,16 +288,16 @@ Status ParseAsmBigger(Tree* tree, Node* node, Lexeme* func_info)
 
     fprintf(log_file, "Âûçîâ ParseAsmBigger\n");
 
-    fprintf(asm_file, "JB: B_bigger_%d\n", counter);
+    fprintf(asm_file, "\nJB :B_bigger_%d\n", counter);
     fprintf(asm_file, "PUSH 0\n");
-    fprintf(asm_file, ":B_bigger_%d\n", counter);
+    fprintf(asm_file, ":B_bigger_%d\n\n", counter);
 
     ParseAsmExpression(tree, node->left, func_info);
     ParseAsmExpression(tree, node->right, func_info);
 
-    fprintf(asm_file, "JL: B_less_%d\n", counter);
+    fprintf(asm_file, "\nJA :B_less_%d\n", counter);
     fprintf(asm_file, "PUSH 1\n");
-    fprintf(asm_file, ":B_less_%d\n", counter);
+    fprintf(asm_file, ":B_less_%d\n\n", counter);
 
     counter++;
 
@@ -294,16 +316,16 @@ Status ParseAsmEqual(Tree* tree, Node* node, Lexeme* func_info)
 
     static int counter = 0;
 
-    fprintf(asm_file, "JN: E_equal_%d\n", counter);
+    fprintf(asm_file, "\nJE :E_equal_%d\n", counter);
     fprintf(asm_file, "PUSH 0\n");
-    fprintf(asm_file, ":E_equal_%d\n", counter);
+    fprintf(asm_file, ":E_equal_%d\n\n", counter);
 
     ParseAsmExpression(tree, node->left, func_info);
     ParseAsmExpression(tree, node->right, func_info);
 
-    fprintf(asm_file, "JNE: E_not_equal_%d\n", counter);
+    fprintf(asm_file, "\nJNE :E_not_equal_%d\n", counter);
     fprintf(asm_file, "PUSH 1\n");
-    fprintf(asm_file, ":E_not_equal_%d\n", counter);
+    fprintf(asm_file, ":E_not_equal_%d\n\n", counter);
 
     counter++;
 
@@ -322,16 +344,16 @@ Status ParseAsmNotEqual(Tree* tree, Node* node, Lexeme* func_info)
 
     fprintf(log_file, "Âûçîâ ParseAsmNotEqual\n");
 
-    fprintf(asm_file, "JNE: NE_equal_%d\n", counter);
+    fprintf(asm_file, "\nJNE :NE_equal_%d\n", counter);
     fprintf(asm_file, "PUSH 0\n");
-    fprintf(asm_file, ":NE_equal_%d\n", counter);
+    fprintf(asm_file, ":NE_equal_%d\n\n", counter);
 
     ParseAsmExpression(tree, node->left, func_info);
     ParseAsmExpression(tree, node->right, func_info);
 
-    fprintf(asm_file, "JN: NE_not_equal_%d\n", counter);
+    fprintf(asm_file, "\nJN :NE_not_equal_%d\n", counter);
     fprintf(asm_file, "PUSH 1\n");
-    fprintf(asm_file, ":NE_not_equal_%d\n", counter);
+    fprintf(asm_file, ":NE_not_equal_%d\n\n", counter);
 
     counter++;
 
@@ -350,16 +372,16 @@ Status ParseAsmLess(Tree* tree, Node* node, Lexeme* func_info)
 
     fprintf(log_file, "Âûçîâ ParseAsmLess\n");
 
-    fprintf(asm_file, "JL: L_less_%d\n", counter);
+    fprintf(asm_file, "\nJA :L_less_%d\n", counter);
     fprintf(asm_file, "PUSH 0\n");
-    fprintf(asm_file, ":L_less_%d\n", counter);
+    fprintf(asm_file, ":L_less_%d\n\n", counter);
 
     ParseAsmExpression(tree, node->left, func_info);
     ParseAsmExpression(tree, node->right, func_info);
 
-    fprintf(asm_file, "JB: L_bigger_%d\n", counter);
+    fprintf(asm_file, "\nJB :L_bigger_%d\n", counter);
     fprintf(asm_file, "PUSH 1\n");
-    fprintf(asm_file, ":L_bigger_%d\n", counter);
+    fprintf(asm_file, ":L_bigger_%d\n\n", counter);
 
     counter++;
 
@@ -482,14 +504,17 @@ Status ParseAsmOutVar(Tree* tree, Node* node, Lexeme* func_info)
 
     int mem_ptr = GetMemPtrOfVar(node, tree->name_table, start_index);
 
-    if (mem_ptr == -1)
+    if (IsInvalidNum(mem_ptr))
         return error;
 
     fprintf(log_file, "Âûçîâ ParseAsmOutVar\n");
 
-    fprintf(asm_file, "PUSH %d\n", mem_ptr);
-    fprintf(asm_file, "POPREG HX\n");
-    fprintf(asm_file, "PUSHM [HX]\n");
+    fprintf(asm_file, "\nPUSH %d  ;ÂÛÂÎÄ ÇÍÀ×ÅÍÈß ÏÅÐÅÌÅÍÍÎÉ |%s|\n",
+            mem_ptr, node->lexeme.str.name);
+    fprintf(asm_file, "PUSHREG HX \n");
+    fprintf(asm_file, "ADD\n");
+    fprintf(asm_file, "POPREG GX\n");
+    fprintf(asm_file, "PUSHM [GX]\n\n");
 
     return success;
 }
@@ -507,7 +532,7 @@ Status ParseAsmInVar(Tree* tree, Node* node, Lexeme* func_info)
 
     int mem_ptr = GetMemPtrOfVar(node, tree->name_table, start_index);
 
-    if (mem_ptr == -1)
+    if (IsInvalidNum(mem_ptr))
     {
         fprintf(log_file, "Íå íàøåë ïåðåìåííîé |%s|", node->lexeme.str.name);
         return error;
@@ -515,9 +540,13 @@ Status ParseAsmInVar(Tree* tree, Node* node, Lexeme* func_info)
 
     fprintf(log_file, "Âûçîâ ParseAsmInVar\n");
 
-    fprintf(asm_file, "PUSH %d\n", mem_ptr);
-    fprintf(asm_file, "POPREG HX\n");
-    fprintf(asm_file, "POPM [HX]\n");
+    fprintf(asm_file, "\nPUSH %d  ;ÂÂÎÄ ÇÍÀ×ÅÍÈß ÏÅÐÅÌÅÍÍÎÉ |%s|\n",
+            mem_ptr, node->lexeme.str.name);
+
+    fprintf(asm_file, "PUSHREG HX \n");
+    fprintf(asm_file, "ADD\n");
+    fprintf(asm_file, "POPREG GX\n");
+    fprintf(asm_file, "POPM [GX]\n\n");
 
     return success;
 }
@@ -545,8 +574,8 @@ size_t GetIndexOfFuncInNameTable(NameTable* name_table, Lexeme* func_info)
 
     for (; i < name_table->size; ++i)
     {
-        printf("NOW_FUNC: %s  -  SRC_FUNC: %s\n", func_info->str.name,name_table->arr[i].name);
-        printf("HASH_NOW_FUNC: %llu  -  HASH_SRC_FUNC: %llu\n", func_info->str.hash, name_table->arr[i].hash);
+        //printf("NOW_FUNC: %s  -  SRC_FUNC: %s\n", func_info->str.name,name_table->arr[i].name);
+        //printf("HASH_NOW_FUNC: %llu  -  HASH_SRC_FUNC: %llu\n", func_info->str.hash, name_table->arr[i].hash);
         if (   func_info->str.hash == name_table->arr[i].hash
             && strcmp(func_info->str.name, name_table->arr[i].name) == 0)
             return i;
@@ -569,19 +598,12 @@ Status ParseAsmCallFunc(Tree* tree, Node* node, Lexeme* func_info)
 
     Lexeme now_func = node->lexeme;
     printf("LEXEME: %s\n", node->lexeme.str.name);
-
     size_t index = GetIndexOfFuncInNameTable(tree->name_table, &now_func);
-    //ïîêà äëÿ îäíîé ïåðåìåííîé
 
     ParseAsmExpression(tree, node->left->right, func_info);
 
-    size_t var_addres = tree->name_table->arr[index + 1].address;
-
-    fprintf(asm_file, "PUSH %llu\n", var_addres);
-    fprintf(asm_file, "POPREG HX\n");
-    fprintf(asm_file, "POPM [HX]\n");
-
-    fprintf(asm_file, "CALL: %s\n", tree->name_table->arr[index].func_ptr);
+    fprintf(asm_file, "CALL :%s\n", tree->name_table->arr[index].func_ptr);
+    fprintf(asm_file, "PUSHREG AX\n");
 
     return success;
 }
@@ -594,6 +616,26 @@ void PrintFuncName(NameTable* name_table, Lexeme* func_info)
     size_t index = GetIndexOfFuncInNameTable(name_table, func_info);
 
     fprintf(asm_file, ":%s\n", name_table->arr[index].func_ptr);
+
+    //ïîêà äëÿ îäíîé ïåðåìåííîé
+    size_t var_addres = name_table->arr[index + 1].address;
+
+    //âûäåëÿåì íîâûé ñòåêîâûé ôðåéì
+    fprintf(asm_file, "PUSH %d     ;ÐÀÇÌÅÐ ÑÒÅÊÎÂÎÃÎ ÔÐÅÉÌÀ\n", SIZE_OF_FRAME);
+    fprintf(asm_file, "PUSHREG HX\n");
+    fprintf(asm_file, "ADD\n");
+    fprintf(asm_file, "POPREG HX\n");
+
+
+    fprintf(asm_file, "\nPUSH %llu  ;ÂÂÎÄ ÇÍÀ×ÅÍÈß ÏÅÐÅÌÅÍÍÎÉ |%s|\n",
+            var_addres, name_table->arr[index + 1].name);
+
+    fprintf(asm_file, "PUSHREG HX \n");
+    fprintf(asm_file, "ADD\n");
+    fprintf(asm_file, "POPREG GX\n");
+    fprintf(asm_file, "POPM [GX]\n\n");
+
+
 }
 
 Lexeme GetMainLexeme()
@@ -602,5 +644,10 @@ Lexeme GetMainLexeme()
     main.str.name = strdup("main");
     main.str.hash = GetHash("main");
     return main;
+}
+
+bool IsInvalidNum(int mem_ptr)
+{
+    return mem_ptr < 0 || mem_ptr > MAX_PTR;
 }
 
