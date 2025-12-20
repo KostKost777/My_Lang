@@ -18,7 +18,8 @@ BaseLexeme keywords_arr[NUM_OF_KEYWORDS] =
 {KEY_RBRACE,    "стоп",         GetHash("стоп")},       // }
 {KEY_COMMA,     ",",            GetHash(",")},           // ,
 {KEY_OUT,       "малевать",     GetHash("малевать")},    // out
-{KEY_IN,        "вечервхату",   GetHash("вечервхату")}  // in
+{KEY_IN,        "вечервхату",   GetHash("вечервхату")},  // in
+{KEY_END,       "откинуться",   GetHash("откинуться")}  // hlt
 };
 
 BaseLexeme operator_arr[NUM_OF_OPERATORS] =

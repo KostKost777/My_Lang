@@ -15,6 +15,7 @@ enum Status
 enum Type
 {
     //Kewords
+    KEY_END = -8,
     KEY_IN = -4,
     KEY_OUT = -3,
     KEY_COMMA = -2,

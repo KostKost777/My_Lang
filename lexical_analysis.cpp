@@ -201,7 +201,7 @@ Status ParseIdentifier(Buffer* buffer, size_t* pos, TokenArray* tokens)
 
         len++;
         MoveBufferPointer(buffer, pos, 1);
-        printf("ABOBA: %s\n", identifier_name);
+        //printf("ABOBA: %s\n", identifier_name);
     }
 
     AddStringToken(tokens, buffer, IDENT, identifier_name);

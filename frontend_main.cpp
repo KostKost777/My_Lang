@@ -16,6 +16,7 @@ int main(const int argv, const char** argc)
     OpenLogFile();
 
     if (argv > 1)  source_file_name = argc[1];
+    if (argv > 2)  out_file_name = argc[2];
 
     Buffer buffer = {};
     GetDataFromFile(&buffer, source_file_name);

@@ -88,7 +88,7 @@ Node* GetInitOfFunc(TokenArray* tokens, size_t* pos, Tree* tree, Node* node)
 
     tree->name_table->now_visible_space++;
 
-    printf("H3\n");
+    //printf("H3\n");
     return  NewNode(GetSeparateToken(KEY_RBRACE),
                     NewNode(ident_token,
                             node_args,
@@ -136,6 +136,10 @@ Node* GetOperator(TokenArray* tokens, size_t* pos, Tree* tree, Node* node)
     fflush(log_file);
 
     node = GetReturnOp(tokens, pos, tree, node);
+    if (node != NULL)
+        return node;
+
+    node = GetEndOp(tokens, pos, tree);
     if (node != NULL)
         return node;
 
@@ -331,6 +335,27 @@ Node* GetReturnOp(TokenArray* tokens, size_t* pos, Tree* tree, Node* node)
                             tree),
                     NULL,
                     tree);
+}
+
+Node* GetEndOp(TokenArray* tokens, size_t* pos, Tree* tree)
+{
+    assert(tree);
+    assert(tokens);
+    assert(pos);
+
+    fprintf(log_file, "<strong>Вызов GetEndOp</strong>\n");
+    fflush(log_file);
+
+    if (tokens->arr[*pos].type != KEY_END) return NULL;
+    Token end_token = tokens->arr[*pos];
+    *pos += 1;
+
+    fprintf(log_file, "Нашел End\n");
+
+    return NewNode(end_token,
+                   NULL,
+                   NULL,
+                   tree);
 }
 
 Node* GetInOutOp(TokenArray* tokens, size_t* pos, Tree* tree, Node* node)

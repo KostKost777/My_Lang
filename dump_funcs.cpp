@@ -218,6 +218,7 @@ const char* GetNodeTypeName(Node* node)
         case KEY_IN:                return "in";
         case KEY_OUT:               return "out";
         case OP_SQRT:               return "sqrt";
+        case KEY_END:               return "end";
 
         default:                    return NULL;
     }
@@ -263,6 +264,7 @@ const char* GetNodeColor(Node* node)
         case KEY_COMMA:             return "#828182ff";
         case KEY_IN:                return "#ec4343ff";
         case KEY_OUT:               return "#ec4343ff";
+        case KEY_END:               return "#ff0000ff";
 
         default:                    return NULL;
     }
