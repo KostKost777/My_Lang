@@ -1,15 +1,15 @@
 #include <TXLib.h>
 
-#include "../frontend/dump_funcs.h"
-#include "../frontend/tree_funcs.h"
-#include "../frontend/read_from_file_funcs.h"
+#include "dump_funcs.h"
+#include "tree_funcs.h"
+#include "read_from_file_funcs.h"
 #include "middle_end_funcs.h"
 #include "op_funcs.h"
-#include "../backend/parse_tree_from_buffer_funcs.h"
-#include "../backend/basewords_backend.h"
-#include "../frontend/write_tree_in_file_funcs.h"
-#include "../frontend/name_table_funcs.h"
-#include "../frontend/hash_funcs.h"
+#include "parse_tree_from_buffer_funcs.h"
+#include "basewords_backend.h"
+#include "write_tree_in_file_funcs.h"
+#include "name_table_funcs.h"
+#include "hash_funcs.h"
 
 const char* source_file_name = "../Examples/srcfile.txt";
 const char* out_file_name = "../Examples/outfile.txt";

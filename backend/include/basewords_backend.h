@@ -1,7 +1,7 @@
 #ifndef KEY_WORDS_BACKEND
 #define KEY_WORDS_BACKEND
 
-#include "../Frontend/lexical_analysis.h"
+#include "lexical_analysis.h"
 
 const int NUM_OF_BASEWORDS = 29;
 

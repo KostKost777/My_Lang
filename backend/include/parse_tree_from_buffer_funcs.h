@@ -1,8 +1,8 @@
 #ifndef PARSE_TREE_FROM_BUFFER_FUNCS
 #define PARSE_TREE_FROM_BUFFER_FUNCS
 
-#include "../Frontend/tree_funcs.h"
-#include "../Frontend/read_from_file_funcs.h"
+#include "tree_funcs.h"
+#include "read_from_file_funcs.h"
 
 void SkipSpaces(char** cur_pos);
 

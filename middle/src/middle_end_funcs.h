@@ -1,7 +1,7 @@
 #ifndef MIDDLE_END_FUNCS
 #define MIDDLE_END_FUNCS
 
-#include "../Frontend/tree_funcs.h"
+#include "tree_funcs.h"
 
 void OptimizeTree(Tree* tree);
 

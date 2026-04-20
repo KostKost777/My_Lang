@@ -2,8 +2,8 @@
 
 #include "middle_end_funcs.h"
 #include "op_funcs.h"
-#include "..\Frontend\tree_funcs.h"
-#include "..\Frontend\lexical_analysis.h"
+#include "tree_funcs.h"
+#include "lexical_analysis.h"
 
 void OptimizeTree(Tree* tree)
 {

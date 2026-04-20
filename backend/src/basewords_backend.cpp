@@ -1,8 +1,8 @@
 #include <TXLib.h>
 
 #include "basewords_backend.h"
-#include "../Frontend/lexical_analysis.h"
-#include "../Frontend/hash_funcs.h"
+#include "lexical_analysis.h"
+#include "hash_funcs.h"
 
 BaseWord basewords_arr[NUM_OF_BASEWORDS] =
 {

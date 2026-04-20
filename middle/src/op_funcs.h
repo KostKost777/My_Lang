@@ -1,8 +1,8 @@
 #ifndef WOLFRAM_OP_FUNCS
 #define WOLFRAM_OP_FUNCS
 
-#include "../Frontend/lexical_analysis.h"
-#include "../Frontend/tree_funcs.h"
+#include "lexical_analysis.h"
+#include "tree_funcs.h"
 
 struct ArgsValue
 {

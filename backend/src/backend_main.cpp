@@ -1,8 +1,8 @@
 #include <TXLib.h>
 
-#include "../Frontend/dump_funcs.h"
-#include "../Frontend/tree_funcs.h"
-#include "../Frontend/read_from_file_funcs.h"
+#include "dump_funcs.h"
+#include "tree_funcs.h"
+#include "read_from_file_funcs.h"
 #include "parse_tree_from_buffer_funcs.h"
 #include "parse_tree_in_asm_funcs.h"
 
