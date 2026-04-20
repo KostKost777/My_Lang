@@ -7,8 +7,8 @@
 #include "dump_funcs.h"
 #include "write_tree_in_file_funcs.h"
 
-const char* source_file_name = "../Examples/factorial.txt";
-const char* out_file_name = "../Examples/outfile.txt";
+const char* source_file_name = "../examples/factorial.txt";
+const char* out_file_name = "../examples/outfile.txt";
 
 int main(const int argv, const char** argc)
 {

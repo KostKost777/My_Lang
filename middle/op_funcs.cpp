@@ -2,10 +2,10 @@
 #include <math.h>
 
 #include "op_funcs.h"
-#include "..\Frontend\dump_funcs.h"
-#include "..\Frontend\hash_funcs.h"
-#include "..\Frontend\tree_funcs.h"
-#include "..\Frontend\lexical_analysis.h"
+#include "..\frontend\dump_funcs.h"
+#include "..\frontend\hash_funcs.h"
+#include "..\frontend\tree_funcs.h"
+#include "..\frontend\lexical_analysis.h"
 
 StructOperation all_op[NUM_OF_OP] =
 {
